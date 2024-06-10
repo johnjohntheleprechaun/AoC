@@ -1,0 +1,74 @@
+from functools import cmp_to_key
+
+hands = [hand.split(" ") for hand in open("seven.txt", "r").read().split("\n")]
+
+def get_type(hand):
+    hand = sorted([item for item in hand])
+    start = 0
+    counts = [0]
+    for i in range(1,len(hand)):
+        if hand[i] == hand[start]:
+            counts[-1] += 1
+        else:
+            counts.append(0)
+            start = i
+
+    if sum(counts) == 0: # High card
+        print("high card")
+        return 0
+    elif sum(counts) == 1: # One pair
+        print("one pair")
+        return 1
+    elif counts.count(1) == 2: # Two pair
+        print("two pair")
+        return 2
+    elif counts.count(2) == 1 and sum(counts) == 2: # Three of a kind
+        print("three of a kind")
+        return 3
+    elif counts.count(2) == 1 and counts.count(1) == 1: # Full house
+        print("full house")
+        return 4
+    elif counts.count(3) == 1: # Four of a kind
+        print("four of a kind")
+        return 5
+    elif counts.count(4) == 1: # Five of a kind
+        print("five of a kind")
+        return 6
+
+score_map = {
+    "T": 10,
+    "J": 11,
+    "Q": 12,
+    "K": 13,
+    "A": 14
+}
+def get_score(card: str):
+    if card.isnumeric():
+        return int(card)
+    else:
+        return score_map[card]
+
+def compare(first, second):
+    first = first[0]
+    second = second[0]
+    type1 = get_type(first)
+    type2 = get_type(second)
+    if type1 == type2:
+        # compare better
+        for i, card in enumerate(first):
+            if get_score(card) > get_score(second[i]):
+                return 1
+            elif get_score(card) < get_score(second[i]):
+                return -1
+        return 0
+        
+    else:
+        return type1 - type2
+
+sorted_hands = sorted(hands, key=cmp_to_key(compare))
+
+total = 0
+for i, hand in enumerate(sorted_hands):
+    total += int(hand[1]) * (i+1)
+
+print(total)
