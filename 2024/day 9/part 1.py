@@ -3,8 +3,9 @@ import itertools
 input_text = open("input.txt").read()
 data = []
 
-for i, batch in enumerate(itertools.batched(input_text, 2)):
-    data.append([i, int(batch[0]), 0 if batch[1] == "\n" else int(batch[1])])
+for i in range(0, len(input_text), 2):
+    batch = input_text[i:i+2]
+    data.append([int(i / 2), int(batch[0]), 0 if batch[1] == "\n" else int(batch[1])])
 
 def stringify(data_to_log, readable=True):
     if readable:
